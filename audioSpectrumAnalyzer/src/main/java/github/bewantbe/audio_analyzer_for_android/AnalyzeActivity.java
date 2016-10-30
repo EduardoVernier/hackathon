@@ -242,7 +242,9 @@ public class AnalyzeActivity extends Activity
                                           Double.toString(6.0)));
     
     bWarnOverrun = sharedPref.getBoolean("warnOverrun", false);
-    
+
+
+
     if (bSaveWav) {
       ((TextView) findViewById(R.id.textview_rec)).setHeight((int)(19*DPRatio));
     } else {

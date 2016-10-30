@@ -12,7 +12,8 @@
         android:layout_weight="0.32"
         class="github.bewantbe.audio_analyzer_for_android.AnalyzeView"
         custom:cutoffDb="-25"
-        custom:sampleRate="16000" />
+        custom:sampleRate="16000"
+        />
 
     <RelativeLayout
         android:layout_width="match_parent"

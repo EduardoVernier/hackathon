@@ -45,7 +45,7 @@ import java.util.Arrays;
 
 public class AnalyzeView extends View {
     private final String TAG = "AnalyzeView::";
-    private Speech speech;
+    public Speech speech;
     private Ready readyCallback = null;      // callback to caller when rendering is complete
     static float DPRatio;
     private float cursorFreq, cursorDB; // cursor location
@@ -82,9 +82,19 @@ public class AnalyzeView extends View {
     // Bus code
     public int validFreqs[] = { 3679, 3604, 3529, 3454, 3379};
     public int invalidFreqs[] = { 3642, 3567, 3492, 3417};
-    public String lines [] = { "149 - Icarai", "110 - Restinga nova via tristeza", "110 - Restinga nova via tristeza"};
+    public String lines [] = { "149 - Icarai", "266 - Vila Nova", "110 - Restinga nova via tristeza"};
+    public int[] sampleAcc = {0, 0, 0};
+    public int minSamples = 40;
+    public int lastBus = -1;
 
     public void mask(double[] db) {
+//
+//        if (speech.textToSpeech.isSpeaking()) {
+//            speech.stopSpeechRecognition();
+//        } else {
+//            speech.startSpeechRecognition();
+//        }
+
 
         boolean result = true;
         if (db.length < validFreqs[4])  return ;
@@ -98,26 +108,42 @@ public class AnalyzeView extends View {
                 && isOn(db, validFreqs[2])
                 && isOn(db, validFreqs[4])) {
 
-            speech.announceBus(lines[0]);
-            Log.v("BUS", "Chegou o " + lines[0]);
+            sampleAcc[0]++;
+
+            if(sampleAcc[0] > minSamples && lastBus != 0) {
+                speech.announceBus(lines[0]);
+                Log.v("BUS", "Chegou o " + lines[0]);
+                sampleAcc[0] = 0;
+                lastBus = 0;
+            }
             return;
         }
 
 
-        if(isOn(db, validFreqs[1])
-                && isOn(db, validFreqs[3])) {
+        if(isOn(db, validFreqs[1]) && isOn(db, validFreqs[3])) {
 
-            speech.announceBus(lines[1]);
-            Log.v("BUS", "Chegou o " + lines[1]);
+            sampleAcc[1]++;
+            if(sampleAcc[1] > minSamples && lastBus != 1) {
+                speech.announceBus(lines[1]);
+                Log.v("BUS", "Chegou o " + lines[1]);
+                sampleAcc[1] = 0;
+                lastBus = 1;
+            }
+
             return;
         }
 
 
-        if(isOn(db, validFreqs[0])
-                && isOn(db, validFreqs[4])) {
+        if(isOn(db, validFreqs[0]) && isOn(db, validFreqs[4])) {
 
-            speech.announceBus(lines[2]);
-            Log.v("BUS", "Chegou o " + lines[2]);
+            sampleAcc[2]++;
+            if(sampleAcc[2] > minSamples && lastBus != 2) {
+                speech.announceBus(lines[2]);
+                Log.v("BUS", "Chegou o " + lines[2]);
+                sampleAcc[2] = 0;
+                lastBus = 2;
+            }
+
             return;
         }
     }
