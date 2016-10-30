@@ -21,6 +21,7 @@
 
 package github.bewantbe.audio_analyzer_for_android;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -44,6 +45,7 @@ import java.util.Arrays;
 
 public class AnalyzeView extends View {
     private final String TAG = "AnalyzeView::";
+    private Speech speech;
     private Ready readyCallback = null;      // callback to caller when rendering is complete
     static float DPRatio;
     private float cursorFreq, cursorDB; // cursor location
@@ -80,7 +82,7 @@ public class AnalyzeView extends View {
     // Bus code
     public int validFreqs[] = { 3679, 3604, 3529, 3454, 3379};
     public int invalidFreqs[] = { 3642, 3567, 3492, 3417};
-    public String lines [] = { "D43", "T1", "T9"};
+    public String lines [] = { "149 - Icarai", "110 - Restinga nova via tristeza", "110 - Restinga nova via tristeza"};
 
     public void mask(double[] db) {
 
@@ -96,7 +98,8 @@ public class AnalyzeView extends View {
                 && isOn(db, validFreqs[2])
                 && isOn(db, validFreqs[4])) {
 
-            Log.v("BUS", "Chegou o D43");
+            speech.announceBus(lines[0]);
+            Log.v("BUS", "Chegou o " + lines[0]);
             return;
         }
 
@@ -104,7 +107,8 @@ public class AnalyzeView extends View {
         if(isOn(db, validFreqs[1])
                 && isOn(db, validFreqs[3])) {
 
-            Log.v("BUS", "Chegou o T1");
+            speech.announceBus(lines[1]);
+            Log.v("BUS", "Chegou o " + lines[1]);
             return;
         }
 
@@ -112,7 +116,8 @@ public class AnalyzeView extends View {
         if(isOn(db, validFreqs[0])
                 && isOn(db, validFreqs[4])) {
 
-            Log.v("BUS", "Chegou o T9");
+            speech.announceBus(lines[2]);
+            Log.v("BUS", "Chegou o " + lines[2]);
             return;
         }
     }
@@ -121,7 +126,7 @@ public class AnalyzeView extends View {
         int desloc = 15;
 
         for (int i = index - desloc; i < index + desloc; i++) {
-            if (db[i] > cursorDB) return true;
+            if (db[i] > -95) return true;
         }
 
         return false;
@@ -152,6 +157,8 @@ public class AnalyzeView extends View {
     }
 
     private void setup(AttributeSet attrs, Context context) {
+        speech = new Speech((Activity) context);
+
         DPRatio = context.getResources().getDisplayMetrics().density;
         Log.v(TAG, "setup():");
         matrix0.reset();
